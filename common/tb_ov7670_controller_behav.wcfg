@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_ov7670_controller_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_ov7670_controller" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="143600001fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="160"></NameColumnWidth>
+      <ValueColumnWidth column_width="76"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group13" type="group">
+      <obj_property name="label">TB</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_ov7670_controller/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/scl" type="logic">
+         <obj_property name="ElementShortName">scl</obj_property>
+         <obj_property name="ObjectShortName">scl</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/sda" type="logic">
+         <obj_property name="ElementShortName">sda</obj_property>
+         <obj_property name="ObjectShortName">sda</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/rx_data" type="array">
+         <obj_property name="ElementShortName">rx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">rx_data[7:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/golden" type="array">
+         <obj_property name="ElementShortName">golden[0:117][7:0]</obj_property>
+         <obj_property name="ObjectShortName">golden[0:117][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/i" type="array">
+         <obj_property name="ElementShortName">i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/j" type="array">
+         <obj_property name="ElementShortName">j[31:0]</obj_property>
+         <obj_property name="ObjectShortName">j[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/transfer" type="array">
+         <obj_property name="ElementShortName">transfer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">transfer[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/addr" type="array">
+         <obj_property name="ElementShortName">addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/pass" type="array">
+         <obj_property name="ElementShortName">pass[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pass[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/fail" type="array">
+         <obj_property name="ElementShortName">fail[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fail[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group125" type="group">
+      <obj_property name="label">FSM</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/cmd_start" type="logic">
+         <obj_property name="ElementShortName">cmd_start</obj_property>
+         <obj_property name="ObjectShortName">cmd_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/cmd_write" type="logic">
+         <obj_property name="ElementShortName">cmd_write</obj_property>
+         <obj_property name="ObjectShortName">cmd_write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/cmd_read" type="logic">
+         <obj_property name="ElementShortName">cmd_read</obj_property>
+         <obj_property name="ObjectShortName">cmd_read</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/cmd_stop" type="logic">
+         <obj_property name="ElementShortName">cmd_stop</obj_property>
+         <obj_property name="ObjectShortName">cmd_stop</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/tx_data" type="array">
+         <obj_property name="ElementShortName">tx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">tx_data[7:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/ack_in" type="logic">
+         <obj_property name="ElementShortName">ack_in</obj_property>
+         <obj_property name="ObjectShortName">ack_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/ack_out" type="logic">
+         <obj_property name="ElementShortName">ack_out</obj_property>
+         <obj_property name="ObjectShortName">ack_out</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/rx_data" type="array">
+         <obj_property name="ElementShortName">rx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">rx_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/busy" type="logic">
+         <obj_property name="ElementShortName">busy</obj_property>
+         <obj_property name="ObjectShortName">busy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/done" type="logic">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/addr" type="array">
+         <obj_property name="ElementShortName">addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">addr[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_addr" type="array">
+         <obj_property name="ElementShortName">n_addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">n_addr[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/mem" type="array">
+         <obj_property name="ElementShortName">mem[0:117][7:0]</obj_property>
+         <obj_property name="ObjectShortName">mem[0:117][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/c_state" type="array">
+         <obj_property name="ElementShortName">c_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">c_state[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_state" type="array">
+         <obj_property name="ElementShortName">n_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">n_state[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_cmd_start" type="logic">
+         <obj_property name="ElementShortName">n_cmd_start</obj_property>
+         <obj_property name="ObjectShortName">n_cmd_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_cmd_write" type="logic">
+         <obj_property name="ElementShortName">n_cmd_write</obj_property>
+         <obj_property name="ObjectShortName">n_cmd_write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_cmd_read" type="logic">
+         <obj_property name="ElementShortName">n_cmd_read</obj_property>
+         <obj_property name="ObjectShortName">n_cmd_read</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_cmd_stop" type="logic">
+         <obj_property name="ElementShortName">n_cmd_stop</obj_property>
+         <obj_property name="ObjectShortName">n_cmd_stop</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_ack_in" type="logic">
+         <obj_property name="ElementShortName">n_ack_in</obj_property>
+         <obj_property name="ObjectShortName">n_ack_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/byte_cnt" type="array">
+         <obj_property name="ElementShortName">byte_cnt[1:0]</obj_property>
+         <obj_property name="ObjectShortName">byte_cnt[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_byte_cnt" type="array">
+         <obj_property name="ElementShortName">n_byte_cnt[1:0]</obj_property>
+         <obj_property name="ObjectShortName">n_byte_cnt[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/transfer" type="array">
+         <obj_property name="ElementShortName">transfer[5:0]</obj_property>
+         <obj_property name="ObjectShortName">transfer[5:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/n_transfer" type="array">
+         <obj_property name="ElementShortName">n_transfer[5:0]</obj_property>
+         <obj_property name="ObjectShortName">n_transfer[5:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/wait_start" type="logic">
+         <obj_property name="ElementShortName">wait_start</obj_property>
+         <obj_property name="ObjectShortName">wait_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/tick" type="logic">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/wait_done" type="logic">
+         <obj_property name="ElementShortName">wait_done</obj_property>
+         <obj_property name="ObjectShortName">wait_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/psc" type="array">
+         <obj_property name="ElementShortName">psc[9:0]</obj_property>
+         <obj_property name="ObjectShortName">psc[9:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/cnt" type="array">
+         <obj_property name="ElementShortName">cnt[12:0]</obj_property>
+         <obj_property name="ObjectShortName">cnt[12:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/target_r" type="array">
+         <obj_property name="ElementShortName">target_r[12:0]</obj_property>
+         <obj_property name="ObjectShortName">target_r[12:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_FSM/target" type="array">
+         <obj_property name="ElementShortName">target[12:0]</obj_property>
+         <obj_property name="ObjectShortName">target[12:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group140" type="group">
+      <obj_property name="label">I2C</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/cmd_start" type="logic">
+         <obj_property name="ElementShortName">cmd_start</obj_property>
+         <obj_property name="ObjectShortName">cmd_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/cmd_write" type="logic">
+         <obj_property name="ElementShortName">cmd_write</obj_property>
+         <obj_property name="ObjectShortName">cmd_write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/cmd_read" type="logic">
+         <obj_property name="ElementShortName">cmd_read</obj_property>
+         <obj_property name="ObjectShortName">cmd_read</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/cmd_stop" type="logic">
+         <obj_property name="ElementShortName">cmd_stop</obj_property>
+         <obj_property name="ObjectShortName">cmd_stop</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/tx_data" type="array">
+         <obj_property name="ElementShortName">tx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">tx_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/U_I2C_MASTER/tx_shift_reg" type="array">
+         <obj_property name="ElementShortName">tx_shift_reg[7:0]</obj_property>
+         <obj_property name="ObjectShortName">tx_shift_reg[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/rx_data" type="array">
+         <obj_property name="ElementShortName">rx_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">rx_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/ack_in" type="logic">
+         <obj_property name="ElementShortName">ack_in</obj_property>
+         <obj_property name="ObjectShortName">ack_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/ack_out" type="logic">
+         <obj_property name="ElementShortName">ack_out</obj_property>
+         <obj_property name="ObjectShortName">ack_out</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/busy" type="logic">
+         <obj_property name="ElementShortName">busy</obj_property>
+         <obj_property name="ObjectShortName">busy</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/done" type="logic">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/scl" type="logic">
+         <obj_property name="ElementShortName">scl</obj_property>
+         <obj_property name="ObjectShortName">scl</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/sda" type="logic">
+         <obj_property name="ElementShortName">sda</obj_property>
+         <obj_property name="ObjectShortName">sda</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_ov7670_controller/dut/U_I2C/U_I2C_MASTER/state" type="array">
+         <obj_property name="ElementShortName">state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">state[2:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
