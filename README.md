@@ -19,5 +19,6 @@ feat/\* → integration → main
 - `feat/xy-detection`
 - `feat/stick-speed`
 - `feat/volume-control`
+- `feat/pattern-stick`
 - `feat/pattern-detection`
 - `feat/uart`
