@@ -36,6 +36,9 @@ module uart #(
     logic [         7:0] tx_data;
     logic                busy;
 
+    // rx
+    logic                done;
+
     // shift register
     logic [   DEPTH-1:0] sh_cnt;
     logic [DEPTH*BW-1:0] i_tx_data_reg;
@@ -112,11 +115,11 @@ module uart #(
         .tx       (tx)
     );
     uart_rx U_RX (
-        .clk(clk),
-        .rst(rst),
+        .clk          (clk),
+        .rst          (rst),
         .sampling_tick(sampling_tick),
-        .rx(rx),
-        .done(done),
-        .o_rx_data(o_rx_data)
+        .rx           (rx),
+        .done         (done),
+        .o_rx_data    (o_rx_data)
     );
 endmodule

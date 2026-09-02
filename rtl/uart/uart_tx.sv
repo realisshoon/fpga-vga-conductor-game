@@ -60,10 +60,10 @@ module uart_tx (
         n_tx_shift_reg = tx_shift_reg;
         case (c_state)
             IDLE: begin
+                n_tx_shift_reg = tx_data;
                 if (start) begin
                     n_busy = 1'b1;
                     n_tx = 1'b0;
-                    n_tx_shift_reg = tx_data;
                 end
             end
             START: begin
