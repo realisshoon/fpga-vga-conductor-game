@@ -3,7 +3,7 @@
 module volume_ctrl #(
     parameter integer INITIAL_VOLUME = 50,    // 볼륨 초기값
     parameter integer MAX_VOLUME = 100,       // 볼륨 최대값
-    parameter integer SCALE = 2,              // 2픽셀 이동할 때 볼륨 1 변화
+    parameter integer SCALE = 2,              // 2픽셀 당 1 볼륨 변화량
     parameter integer WAIT_FRAMES = 30,       // 기준 좌표를 잡기 전 대기 프레임 수
     parameter integer TRACK_FRAMES = 10       // 볼륨 계산 주기 프레임 수
 ) (
@@ -18,8 +18,17 @@ module volume_ctrl #(
     output logic [6:0] o_volume_level         // 계산된 볼륨 0 ~ 100
 );
 
-    logic [4:0] wait_count_c, wait_count_n;    // 30 frame counter
-    logic [3:0] track_count_c, track_count_n;  // 10 frame counter
+    localparam logic [9:0] NO_HAND = 10'h3FF;
+
+    // 프레임 수가 바뀌면 카운터 비트 수도 자동으로 변경된다.
+    // $clog2(1)은 0이므로, 최소 비트 수는 1비트로 제한한다.
+    localparam integer WAIT_COUNT_WIDTH =
+        (WAIT_FRAMES > 1) ? $clog2(WAIT_FRAMES) : 1;
+    localparam integer TRACK_COUNT_WIDTH =
+        (TRACK_FRAMES > 1) ? $clog2(TRACK_FRAMES) : 1;
+
+    logic [WAIT_COUNT_WIDTH-1:0] wait_count_c, wait_count_n;
+    logic [TRACK_COUNT_WIDTH-1:0] track_count_c, track_count_n;
     logic [9:0] base_y_c, base_y_n;            // 기준 Y좌표
     logic [6:0] volume_c, volume_n;            // 현재/다음 볼륨 0~100
     logic       valid_c, valid_n;              // 현재/다음 valid
@@ -38,12 +47,15 @@ module volume_ctrl #(
 
     state_t c_state;         // 현재 상태
     state_t n_state;         // 다음 상태
+    
+    assign volume_control_valid = valid_c;
+    assign o_volume_level       = volume_data_c;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             c_state        <= S_IDLE;
-            wait_count_c   <= 5'd0;
-            track_count_c  <= 4'd0;
+            wait_count_c   <= '0;
+            track_count_c  <= '0;
             base_y_c       <= 10'd0;
             volume_c       <= INITIAL_VOLUME;
             valid_c        <= 1'b0;
@@ -102,34 +114,34 @@ module volume_ctrl #(
 
         case (c_state)
             S_IDLE: begin
-                wait_count_n  = 5'd0;
-                track_count_n = 4'd0;
+                wait_count_n  = '0;
+                track_count_n = '0;
 
-                if (i_vsync && (i_hand_y_pixel != 10'h0FF)) begin
+                if (i_vsync && (i_hand_y_pixel != NO_HAND)) begin
                     // 상태가 바뀌면 counter는 0부터 시작한다.
                     // 이 프레임은 손 검출 및 WAIT 진입 용도로만 사용한다.
-                    wait_count_n = 5'd0;
+                    wait_count_n = '0;
                     n_state      = S_WAIT;
                 end
             end
 
             S_WAIT: begin
-                track_count_n = 4'd0;
+                track_count_n = '0;
 
                 if (i_vsync) begin
                     if (((wait_count_c == TRACK_FRAMES - 1)       ||
                          (wait_count_c == (TRACK_FRAMES * 2) - 1) ||
                          (wait_count_c == WAIT_FRAMES - 1)) &&
-                        (i_hand_y_pixel == 10'h0FF)) begin
+                        (i_hand_y_pixel == NO_HAND)) begin
 
-                        wait_count_n = 5'd0;
+                        wait_count_n = '0;
                         n_state      = S_IDLE;
                     end else if ((wait_count_c == WAIT_FRAMES - 1) &&
-                                 (i_hand_y_pixel != 10'h0FF)) begin
+                                 (i_hand_y_pixel != NO_HAND)) begin
 
                         base_y_n       = i_hand_y_pixel;
-                        wait_count_n   = 5'd0;
-                        track_count_n  = 4'd0;
+                        wait_count_n   = '0;
+                        track_count_n  = '0;
 
                         // 기준점을 새로 잡으면 볼륨을 다시 초기값으로 설정한다.
                         volume_n = INITIAL_VOLUME;
@@ -142,15 +154,15 @@ module volume_ctrl #(
             end
 
             S_TRACK: begin
-                wait_count_n = 5'd0;
+                wait_count_n = '0;
 
                 if (i_vsync) begin
                     if (track_count_c == TRACK_FRAMES - 1) begin
                         // count=0에서 시작해 10번째 VSYNC가 들어오면
                         // 계산하고 다시 0으로 초기화한다.
-                        track_count_n = 4'd0;
+                        track_count_n = '0;
 
-                        if (i_hand_y_pixel == 10'h0FF) begin
+                        if (i_hand_y_pixel == NO_HAND) begin
                             n_state = S_IDLE;
                         end else begin
                             // 계산된 볼륨이 실제로 달라졌을 때만
@@ -168,8 +180,8 @@ module volume_ctrl #(
 
             default: begin
                 n_state       = S_IDLE;
-                wait_count_n  = 5'd0;
-                track_count_n = 4'd0;
+                wait_count_n  = '0;
+                track_count_n = '0;
             end
         endcase
 
@@ -180,8 +192,5 @@ module volume_ctrl #(
             valid_n       = 1'b1;
         end
     end
-
-    assign volume_control_valid = valid_c;
-    assign o_volume_level       = volume_data_c;
 
 endmodule
