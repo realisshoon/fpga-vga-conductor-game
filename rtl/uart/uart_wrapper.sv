@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module uart_interface (
+module uart_wrapper (
     input logic clk,
     input logic rst,
     input logic pixel_dec_sync,
