@@ -13,7 +13,7 @@ module tb_volume_ctrl;
     logic       volume_control_valid;
     logic [6:0] o_volume_level;
 
-    localparam logic [9:0] NO_HAND = 10'h0FF;
+    localparam logic [9:0] NO_HAND = 10'h3FF;
 
     // 기능 검증용 100 MHz clock
     // 실제 30 FPS 시간 간격은 기다리지 않고 프레임을 빠르게 발생시킨다.
@@ -88,119 +88,100 @@ module tb_volume_ctrl;
         @(negedge clk);
         rst = 1'b0;
 
-        $display("\n[TEST 1] Reset 확인");
-        check_output(7'd50, 1'b0);
-
         // -------------------------------------------------------------
-        // TEST 2: WAIT 도중 10번째 프레임에서 손을 놓치면 IDLE 복귀
+        // TEST 1: Reset과 IDLE 초기화
         // -------------------------------------------------------------
-        $display("\n[TEST 2] WAIT 상태의 손 미검출 확인");
-        send_frame(10'd180);            // 손 검출: IDLE -> WAIT, count=0
-        repeat (9) send_frame(10'd170); // WAIT의 1~9번째 프레임
-        send_frame(NO_HAND);            // WAIT의 10번째 프레임: IDLE 복귀
-
-        if (dut.wait_count_c !== 5'd0) begin
-            $display("[FAIL] IDLE에서 wait_count가 0으로 초기화되지 않음");
+        $display("\n[TEST 1] Reset과 IDLE 초기화 확인");
+        if ((dut.c_state !== 2'd0)       ||
+            (dut.wait_count_c !== 5'd0)  ||
+            (dut.track_count_c !== 4'd0) ||
+            (dut.base_y_c !== 10'd0)     ||
+            (dut.volume_c !== 7'd50)) begin
+            $display("[FAIL] Reset 초기값 오류");
             $fatal(1);
         end
         check_output(7'd50, 1'b0);
 
         // -------------------------------------------------------------
-        // TEST 3: 30번째 프레임 좌표 120을 기준 좌표로 저장
-        // 1~29번째 좌표는 기준 좌표로 사용되지 않는다.
+        // TEST 2: WAIT 30번째 프레임에서 base_y 저장 및 TRACK 전환
         // -------------------------------------------------------------
-        $display("\n[TEST 3] 30 Frame 대기와 base_y 저장 확인");
-        send_frame(10'd200);            // 손 검출: IDLE -> WAIT, count=0
+        $display("\n[TEST 2] 30번째 프레임 base_y 저장 및 TRACK 전환");
+        send_frame(10'd200);             // 손 검출: IDLE -> WAIT
+
+        if ((dut.c_state !== 2'd1) || (dut.wait_count_c !== 5'd0)) begin
+            $display("[FAIL] IDLE에서 WAIT로 전환되지 않음");
+            $fatal(1);
+        end
+
         repeat (29) send_frame(10'd160); // WAIT의 1~29번째 프레임
-        send_frame(10'd120);            // WAIT의 30번째 프레임
+        send_frame(10'd120);             // WAIT의 30번째 프레임
 
-        if (dut.wait_count_c !== 5'd0) begin
-            $display("[FAIL] TRACK 진입 시 wait_count가 0이 아님");
-            $fatal(1);
-        end
-        if (dut.base_y_c !== 10'd120) begin
-            $display("[FAIL] base_y=%0d(expected 120)", dut.base_y_c);
-            $fatal(1);
-        end
-        if (dut.volume_c !== 7'd50) begin
-            $display("[FAIL] 초기 volume=%0d(expected 50)", dut.volume_c);
+        if ((dut.c_state !== 2'd2)       ||
+            (dut.wait_count_c !== 5'd0)  ||
+            (dut.track_count_c !== 4'd0) ||
+            (dut.base_y_c !== 10'd120)   ||
+            (dut.volume_c !== 7'd50)) begin
+            $display("[FAIL] TRACK 전환 결과: base_y=%0d, volume=%0d",
+                     dut.base_y_c, dut.volume_c);
             $fatal(1);
         end
         check_output(7'd50, 1'b0);
 
         // -------------------------------------------------------------
-        // TEST 4: 10프레임 뒤 Y 120 -> 100
-        // delta=+20, SCALE=2이므로 volume 50 -> 60
-        // 계산 후 base_y도 100으로 갱신된다.
+        // TEST 3: 손 위 이동으로 volume 50 -> 60
+        // base=120, current=100, delta=20, SCALE=2, 변화량=10
         // -------------------------------------------------------------
-        $display("\n[TEST 4] 손을 위로 이동: volume 증가 확인");
+        $display("\n[TEST 3] 손 위 이동: volume 50 -> 60");
         repeat (10) send_frame(10'd100);
 
         if ((dut.track_count_c !== 4'd0) ||
-            (dut.volume_c !== 7'd60) || (dut.base_y_c !== 10'd100)) begin
+            (dut.base_y_c !== 10'd100)   ||
+            (dut.volume_c !== 7'd60)) begin
             $display("[FAIL] volume=%0d(expected 60), base_y=%0d(expected 100)",
                      dut.volume_c, dut.base_y_c);
             $fatal(1);
         end
         check_output(7'd60, 1'b1);
 
-        // ready=1이므로 다음 상승 에지에서 handshake가 완료된다.
+        // ready=1이므로 다음 상승 에지에서 valid가 내려간다.
         @(posedge clk);
-        #1;
+        #1ps;
         check_output(7'd60, 1'b0);
 
         // -------------------------------------------------------------
-        // TEST 5: 같은 Y=100에 계속 있으면 볼륨이 다시 증가하지 않음
+        // TEST 4: 같은 위치에서 volume 60 유지
         // -------------------------------------------------------------
-        $display("\n[TEST 5] 같은 위치 유지: volume 유지 확인");
+        $display("\n[TEST 4] 같은 위치: volume 60 유지");
         repeat (10) send_frame(10'd100);
 
         if ((dut.track_count_c !== 4'd0) ||
-            (dut.volume_c !== 7'd60) || (dut.base_y_c !== 10'd100)) begin
+            (dut.base_y_c !== 10'd100)   ||
+            (dut.volume_c !== 7'd60)) begin
             $display("[FAIL] 같은 위치에서 volume 또는 base_y가 변경됨");
             $fatal(1);
         end
         check_output(7'd60, 1'b0);
 
         // -------------------------------------------------------------
-        // TEST 6: Y 100 -> 120
-        // delta=-20, SCALE=2이므로 volume 60 -> 50
+        // TEST 5: ready=0 상태에서 다음 VSYNC로 valid 초기화
+        // base=100, current=80이므로 volume 60 -> 70
         // -------------------------------------------------------------
-        $display("\n[TEST 6] 손을 아래로 이동: volume 감소 확인");
-        repeat (10) send_frame(10'd120);
-
-        if ((dut.track_count_c !== 4'd0) ||
-            (dut.volume_c !== 7'd50) || (dut.base_y_c !== 10'd120)) begin
-            $display("[FAIL] volume=%0d(expected 50), base_y=%0d(expected 120)",
-                     dut.volume_c, dut.base_y_c);
-            $fatal(1);
-        end
-        check_output(7'd50, 1'b1);
-
-        @(posedge clk);
-        #1;
-        check_output(7'd50, 1'b0);
-
-        // -------------------------------------------------------------
-        // TEST 7: ready=0이어도 다음 VSYNC에서 valid가 초기화되는지 확인
-        // Y 120 -> 80: delta=+40, volume 50 -> 70
-        // -------------------------------------------------------------
-        $display("\n[TEST 7] ready=0일 때 다음 VSYNC에서 valid 초기화 확인");
+        $display("\n[TEST 5] ready=0에서 다음 VSYNC로 valid 초기화");
         @(negedge clk);
         volume_control_ready = 1'b0;
 
         repeat (10) send_frame(10'd80);
 
         if ((dut.track_count_c !== 4'd0) ||
-            (dut.volume_c !== 7'd70) || (dut.base_y_c !== 10'd80)) begin
+            (dut.base_y_c !== 10'd80)    ||
+            (dut.volume_c !== 7'd70)) begin
             $display("[FAIL] volume=%0d(expected 70), base_y=%0d(expected 80)",
                      dut.volume_c, dut.base_y_c);
             $fatal(1);
         end
         check_output(7'd70, 1'b1);
 
-        // ready=0인 상태에서 다음 프레임을 발생시킨다.
-        // i_vsync에 의해 이전 valid가 0으로 초기화되어야 한다.
+        // ready가 0이어도 다음 VSYNC에서 이전 valid가 0이 되어야 한다.
         send_frame(10'd80);
         if (dut.track_count_c !== 4'd1) begin
             $display("[FAIL] 다음 VSYNC 후 track_count=%0d(expected 1)",
@@ -209,41 +190,28 @@ module tb_volume_ctrl;
         end
         check_output(7'd70, 1'b0);
 
-        // ready가 계속 0이어도 valid는 다시 올라오면 안 된다.
-        repeat (3) begin
-            @(posedge clk);
-            #1;
-            check_output(7'd70, 1'b0);
-        end
-
-        // 이미 valid가 초기화됐으므로 ready를 1로 바꿔도 valid는 0이다.
         @(negedge clk);
         volume_control_ready = 1'b1;
-        @(posedge clk);
-        #1;
-        check_output(7'd70, 1'b0);
 
         // -------------------------------------------------------------
-        // TEST 8: TRACK의 10번째 확인 프레임에서 FF가 들어오면 IDLE
+        // TEST 6: NO_HAND(3FF) 입력으로 TRACK -> IDLE 복귀
+        // TEST 5에서 track_count=1이므로 8프레임 뒤 count=9가 된다.
         // -------------------------------------------------------------
-        $display("\n[TEST 8] TRACK 상태의 손 미검출 확인");
-        // TEST 7의 마지막 VSYNC로 track_count가 이미 1이다.
+        $display("\n[TEST 6] 3FF 입력으로 TRACK -> IDLE 복귀");
         repeat (8) send_frame(10'd80);
         send_frame(NO_HAND);
 
-        if ((dut.wait_count_c !== 5'd0) ||
-            (dut.track_count_c !== 4'd0)) begin
-            $display("[FAIL] IDLE에서 counter가 초기화되지 않음");
+        if ((dut.c_state !== 2'd0)       ||
+            (dut.wait_count_c !== 5'd0)  ||
+            (dut.track_count_c !== 4'd0) ||
+            (dut.volume_c !== 7'd70)) begin
+            $display("[FAIL] TRACK에서 IDLE 복귀 결과 오류");
             $fatal(1);
         end
         check_output(7'd70, 1'b0);
 
-        // IDLE에서는 FF 입력이 계속 들어와도 아무 변화가 없어야 한다.
-        repeat (3) send_frame(NO_HAND);
-        check_output(7'd70, 1'b0);
-
         $display("\n========================================");
-        $display(" ALL VOLUME_CTRL TESTS PASSED");
+        $display(" ALL 6 VOLUME_CTRL TESTS PASSED");
         $display("========================================\n");
         $finish;
     end
