@@ -15,12 +15,8 @@ module top_ov_7670 #(
 
     // VGA controller sig
     input  logic       clk,
-    input  logic       reset,
+    input  logic       rst,
     input  logic       sw_mode,
-    // input  logic       sw_gray,
-    // input  logic       sw_binary,
-    // input  logic       sw_invert,
-    // input  logic [3:0] sw_th,
     output logic       h_sync,
     output logic       v_sync,
     output logic [3:0] port_red,
@@ -52,14 +48,14 @@ module top_ov_7670 #(
     // OV7670 setup
     SCCB_Setup_controller U_OV_SETUP_CTRL (
         .clk(clk),
-        .rst(reset),
+        .rst(rst),
         .scl(scl),
         .sda(sda)
     );
 
     // Camera Controller
     ov7670_mem_controller U_OV7670_MEM_CONTROLLER (
-        .reset    (reset),
+        .rst      (rst),
         .pclk     (pclk),
         .cam_href (cam_href),
         .cam_vsync(cam_vsync),
@@ -70,7 +66,7 @@ module top_ov_7670 #(
     );
     vga_decoder U_VGA_DECODER (
         .clk    (clk),
-        .reset  (reset),
+        .rst    (rst),
         .xclk   (xclk),
         .h_sync (w_h_sync),
         .v_sync (w_v_sync),
@@ -89,7 +85,7 @@ module top_ov_7670 #(
     );
     rom_reader U_ROM_READER (
         .clk      (clk),
-        .reset    (reset),
+        .rst      (rst),
         .de       (de),
         .sw_invert(sw_invert),
         .x_pixel  (x_pixel),
@@ -100,7 +96,7 @@ module top_ov_7670 #(
     );
     rom_reader_upscale U_ROM_READER_UPSCALE (
         .clk      (clk),
-        .reset    (reset),
+        .rst      (rst),
         .de       (de),
         .sw_invert(sw_invert),
         .x_pixel  (x_pixel),
@@ -111,7 +107,7 @@ module top_ov_7670 #(
     );
     vga_outreg U_VGA_OUTREG (
         .clk     (clk),
-        .reset   (reset),
+        .rst     (rst),
         .i_h_sync(w_h_sync),
         .i_v_sync(w_v_sync),
         .i_rgb   (w_rgb),
@@ -119,45 +115,12 @@ module top_ov_7670 #(
         .o_v_sync(v_sync),
         .o_rgb   ({port_red, port_green, port_blue})
     );
-    // vga_outreg U_VGA_OUTREG (
-    //     .clk     (clk),
-    //     .reset   (reset),
-    //     .i_h_sync(w_h_sync),
-    //     .i_v_sync(w_v_sync),
-    //     .i_rgb   (w_rgb),
-    //     .o_h_sync(w_h_sync2),
-    //     .o_v_sync(w_v_sync2),
-    //     .o_rgb   (r_rgb)
-    // );
-    // gray_filter U_GRAY_FILTER (
-    //     .clk     (clk),
-    //     .reset   (reset),
-    //     .sw_gray (sw_gray),
-    //     .i_h_sync(w_h_sync2),
-    //     .i_v_sync(w_v_sync2),
-    //     .i_rgb   (r_rgb),
-    //     .o_h_sync(w_h_sync3),
-    //     .o_v_sync(w_v_sync3),
-    //     .o_rgb   (g_rgb)
-    // );
-    // binary_filter U_BINARY_FILTER (
-    //     .clk      (clk),
-    //     .reset    (reset),
-    //     .sw_binary(sw_binary),
-    //     .sw_invert(sw_invert),
-    //     .sw_th    (sw_th),
-    //     .i_rgb    (g_rgb),
-    //     .i_h_sync (w_h_sync3),
-    //     .i_v_sync (w_v_sync3),
-    //     .o_rgb    ({port_red, port_green, port_blue}),
-    //     .o_h_sync (h_sync),
-    //     .o_v_sync (v_sync)
-    // );
+
 endmodule
 
 module vga_outreg (
     input  logic        clk,
-    input  logic        reset,
+    input  logic        rst,
     input  logic        i_h_sync,
     input  logic        i_v_sync,
     input  logic [11:0] i_rgb,
@@ -173,8 +136,8 @@ module vga_outreg (
     assign o_v_sync = r_v_sync;
     assign o_rgb    = r_rgb;
 
-    always @(posedge clk, posedge reset) begin
-        if (reset) begin
+    always @(posedge clk, posedge rst) begin
+        if (rst) begin
             r_h_sync <= 1'b1;
             r_v_sync <= 1'b1;
             r_rgb    <= 0;
