@@ -50,12 +50,10 @@ module pattern_stick (
                 pattern_control_valid <= 1'b0;
             end else if (pattern_control_valid) begin
                 if (pattern_control_ready) pattern_control_valid <= 1'b0;
-            end else if (pattern_tick_reg) begin
+            end else if (n_state != c_state) begin
                 c_state               <= n_state;
-                pattern_tick          <= 1'b1;
+                pattern_tick          <= pattern_tick_reg;
                 pattern_control_valid <= 1'b1;
-            end else begin
-                c_state <= n_state;
             end
         end
     end

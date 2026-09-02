@@ -42,6 +42,8 @@ module tb_pattern_stick ();
     initial begin
         rst = 1;
         clk = 0;
+        i_vsync = 0;
+        pattern_control_ready = 1;
         #30;
         rst = 0;
         @(posedge clk);
@@ -52,26 +54,27 @@ module tb_pattern_stick ();
 
         @(posedge clk);
         @(posedge clk);
-        pattern_control_ready = 1;
-
-        @(posedge clk);
-        pattern_control_ready = 0;
+        i_vsync = 1;
 
         i_stick_x_pixel = 160;
         i_stick_y_pixel = 195;
-
-        @(posedge clk);
-        i_vsync = 1;
         @(posedge clk);
         i_vsync = 0;
-        i_stick_x_pixel = 100;
-        i_stick_y_pixel = 135;
-        pattern_control_ready = 1;
+
+
         @(posedge clk);
 
         @(posedge clk);
         @(posedge clk);
         @(posedge clk);
+        @(posedge clk);
+        @(posedge clk);
+        @(posedge clk);
+        i_vsync = 1;
+        i_stick_x_pixel = 100;
+        i_stick_y_pixel = 135;
+        @(posedge clk);
+        i_vsync = 0;
         @(posedge clk);
         @(posedge clk);
         @(posedge clk);
