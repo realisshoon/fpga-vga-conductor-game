@@ -6,8 +6,6 @@ module uart_data_control (
     input  logic        tx_sync,
     input  logic        uart_data_control_uart_ready,
     output logic        uart_data_control_uart_valid,
-    // output logic        uart_uart_data_control_ready,
-    // input  logic        uart_uart_data_control_valid,
     output logic        volume_uart_ready,
     input  logic [ 6:0] i_volume_level,
     input  logic        volume_uart_valid,
@@ -147,3 +145,4 @@ module uart_data_control (
 
 
 endmodule
+

@@ -130,6 +130,8 @@ module uart_rx #(
                         if (rx_2 == 1'b1) begin
                             n_done = 1'b1;
                         end else n_done = 1'b0;
+                    end else begin
+                        n_samp_tick_cnt = samp_tick_cnt + 1;
                     end
                 end
             end
