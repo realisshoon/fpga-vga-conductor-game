@@ -1,7 +1,27 @@
 `timescale 1ns / 1ps
 
 
-module pattern_stick (
+module pattern_stick #(
+    parameter logic [9:0] ZONE1_X_MIN = 10'd140,
+    parameter logic [9:0] ZONE1_X_MAX = 10'd180,
+    parameter logic [9:0] ZONE1_Y_MIN = 10'd175,
+    parameter logic [9:0] ZONE1_Y_MAX = 10'd240,
+    
+    parameter logic [9:0] ZONE2_X_MIN = 10'd75,
+    parameter logic [9:0] ZONE2_X_MAX = 10'd125,
+    parameter logic [9:0] ZONE2_Y_MIN = 10'd110,
+    parameter logic [9:0] ZONE2_Y_MAX = 10'd160,
+
+    parameter logic [9:0] ZONE3_X_MIN = 10'd195,
+    parameter logic [9:0] ZONE3_X_MAX = 10'd245,
+    parameter logic [9:0] ZONE3_Y_MIN = 10'd110,
+    parameter logic [9:0] ZONE3_Y_MAX = 10'd160,
+
+    parameter logic [9:0] ZONE4_X_MIN = 10'd140,
+    parameter logic [9:0] ZONE4_X_MAX = 10'd180,
+    parameter logic [9:0] ZONE4_Y_MIN = 10'd0,
+    parameter logic [9:0] ZONE4_Y_MAX = 10'd60
+) (
     input  logic       clk,
     input  logic       rst,
     input  logic       game_start,
@@ -12,6 +32,7 @@ module pattern_stick (
     input  logic       pattern_control_ready,
     output logic       pattern_control_valid,
     output logic [2:0] pattern_state,
+    output logic       i_state_change_enable,
     output logic       pattern_tick
 );
 
@@ -30,10 +51,14 @@ module pattern_stick (
     } pattern_state_e;
     pattern_state_e c_state, n_state;
 
-    assign zone1 = (i_stick_x_pixel >= 140 && i_stick_x_pixel <= 180) && (i_stick_y_pixel >= 175 && i_stick_y_pixel <= 240);
-    assign zone2 = (i_stick_x_pixel >= 75 && i_stick_x_pixel <= 125) && (i_stick_y_pixel >= 110 && i_stick_y_pixel <= 160);
-    assign zone3 = (i_stick_x_pixel >= 195 && i_stick_x_pixel <= 245) && (i_stick_y_pixel >= 110 && i_stick_y_pixel <= 160);
-    assign zone4 = (i_stick_x_pixel >= 140 && i_stick_x_pixel <= 180) && (i_stick_y_pixel >= 0 && i_stick_y_pixel <= 60);
+    assign zone1 = (i_stick_x_pixel >= ZONE1_X_MIN && i_stick_x_pixel <= ZONE1_X_MAX)
+                && (i_stick_y_pixel >= ZONE1_Y_MIN && i_stick_y_pixel <= ZONE1_Y_MAX);
+    assign zone2 = (i_stick_x_pixel >= ZONE2_X_MIN && i_stick_x_pixel <= ZONE2_X_MAX)
+                && (i_stick_y_pixel >= ZONE2_Y_MIN && i_stick_y_pixel <= ZONE2_Y_MAX);
+    assign zone3 = (i_stick_x_pixel >= ZONE3_X_MIN && i_stick_x_pixel <= ZONE3_X_MAX)
+                && (i_stick_y_pixel >= ZONE3_Y_MIN && i_stick_y_pixel <= ZONE3_Y_MAX);
+    assign zone4 = (i_stick_x_pixel >= ZONE4_X_MIN && i_stick_x_pixel <= ZONE4_X_MAX)
+                && (i_stick_y_pixel >= ZONE4_Y_MIN && i_stick_y_pixel <= ZONE4_Y_MAX);
 
     assign pattern_state = c_state;
 
@@ -57,6 +82,7 @@ module pattern_stick (
             end
         end
     end
+
     //Next CL
     always_comb begin
         n_state = c_state;
@@ -73,7 +99,7 @@ module pattern_stick (
                     n_state = READY;
                 end
             end
-            READY : begin
+            READY: begin
                 if (zone1) begin
                     n_state = PATTERN_1;
                     pattern_tick_reg = 1'b1;
@@ -84,19 +110,24 @@ module pattern_stick (
                     n_state = STOP;
                     pattern_tick_reg = 1'b1;
 
-                end else if (zone2) begin
-                    n_state = PATTERN_2;
-                    pattern_tick_reg = 1'b1;
+                end else if (i_state_change_enable) begin
+                    if (zone2) begin
+                        n_state = PATTERN_2;
+                        pattern_tick_reg = 1'b1;
+                    end
                 end
             end
             PATTERN_2: begin
+
                 if (game_stop) begin
                     n_state = STOP;
                     pattern_tick_reg = 1'b1;
 
-                end else if (zone3) begin
-                    n_state = PATTERN_3;
-                    pattern_tick_reg = 1'b1;
+                end else if (i_state_change_enable) begin
+                    if (zone3) begin
+                        n_state = PATTERN_3;
+                        pattern_tick_reg = 1'b1;
+                    end
                 end
             end
             PATTERN_3: begin
@@ -104,19 +135,24 @@ module pattern_stick (
                     n_state = STOP;
                     pattern_tick_reg = 1'b1;
 
-                end else if (zone4) begin
-                    n_state = PATTERN_4;
-                    pattern_tick_reg = 1'b1;
+                end else if (i_state_change_enable) begin
+                    if (zone4) begin
+                        n_state = PATTERN_4;
+                        pattern_tick_reg = 1'b1;
+                    end
                 end
             end
             PATTERN_4: begin
+
                 if (game_stop) begin
                     n_state = STOP;
                     pattern_tick_reg = 1'b1;
 
-                end else if (zone1) begin
-                    n_state = PATTERN_1;
-                    pattern_tick_reg = 1'b1;
+                end else if (i_state_change_enable) begin
+                    if (zone1) begin
+                        n_state = PATTERN_1;
+                        pattern_tick_reg = 1'b1;
+                    end
                 end
             end
             STOP: begin
