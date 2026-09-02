@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module color_xy_top #(
+module RG_detect #(
     parameter logic [3:0] RED_MIN      = 4'd8,
     parameter logic [3:0] RED_G_MARGIN = 4'd3,
     parameter logic [3:0] RED_B_MARGIN = 4'd3,
