@@ -95,7 +95,7 @@ module pattern_stick #(
                 end
             end
             START: begin
-                if (!zone4) begin
+                if (zone4) begin
                     n_state = READY;
                 end
             end
