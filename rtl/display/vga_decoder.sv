@@ -2,7 +2,7 @@
 
 module vga_decoder (
     input  logic       clk,
-    input  logic       reset,
+    input  logic       rst,
     output logic       xclk,
     output logic       h_sync,
     output logic       v_sync,
@@ -18,17 +18,17 @@ module vga_decoder (
     assign xclk = w_pclk;
 
     pclk_gen U_PCLK_GEN (
-        .clk  (clk),
-        .reset(reset),
-        .pclk (w_pclk)
+        .clk (clk),
+        .rst (rst),
+        .pclk(w_pclk)
     );
 
     pixel_counter U_PIXEL_COUNTER (
         .clk  (clk),
-        .reset(reset),
+        .rst  (rst),
         .pclk (w_pclk),
-        .h_cnt(h_cnt),  // 0~799
-        .v_cnt(v_cnt)   // 0~524
+        .h_cnt(h_cnt),   // 0~799
+        .v_cnt(v_cnt)    // 0~524
     );
 
     sync_block U_SYNC_BLOCK (
@@ -45,12 +45,12 @@ endmodule
 
 module pclk_gen (
     input      clk,
-    input      reset,
+    input      rst,
     output reg pclk
 );
     reg [1:0] p_cnt;
-    always @(posedge clk, posedge reset) begin
-        if (reset) begin
+    always @(posedge clk, posedge rst) begin
+        if (rst) begin
             p_cnt <= 0;
             pclk  <= 0;
         end else begin
@@ -68,15 +68,15 @@ endmodule
 
 module pixel_counter (
     input            clk,
-    input            reset,
+    input            rst,
     input            pclk,
     output reg [9:0] h_cnt,  // 0~799
     output reg [9:0] v_cnt   // 0~524
 );
     localparam H_MAX = 800, V_MAX = 525;
     // h_cnt
-    always @(posedge clk, posedge reset) begin
-        if (reset) begin
+    always @(posedge clk, posedge rst) begin
+        if (rst) begin
             h_cnt <= 0;
         end else begin
             if (pclk) begin
@@ -89,8 +89,8 @@ module pixel_counter (
         end
     end
     // v_cnt
-    always @(posedge clk, posedge reset) begin
-        if (reset) begin
+    always @(posedge clk, posedge rst) begin
+        if (rst) begin
             v_cnt <= 0;
         end else begin
             if (pclk) begin
@@ -118,16 +118,16 @@ module sync_block (
 );
     // Horizontal spec.
     localparam H_Visible_area = 640;
-    localparam H_Front_porch = 16;
-    localparam H_Sync_pulse = 96;
-    localparam H_Back_porch = 48;
-    localparam H_Whole_line = 800;
+    localparam H_Front_porch  = 16;
+    localparam H_Sync_pulse   = 96;
+    localparam H_Back_porch   = 48;
+    localparam H_Whole_line   = 800;
     // Vertical spec.
     localparam V_Visible_area = 480;
-    localparam V_Front_porch = 10;
-    localparam V_Sync_pulse = 2;
-    localparam V_Back_porch = 33;
-    localparam V_Whole_frame = 525;
+    localparam V_Front_porch  = 10;
+    localparam V_Sync_pulse   = 2;
+    localparam V_Back_porch   = 33;
+    localparam V_Whole_frame  = 525;
 
     assign x_pixel = h_cnt;
     assign y_pixel = v_cnt;

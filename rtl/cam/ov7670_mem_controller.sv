@@ -6,7 +6,7 @@ module ov7670_mem_controller #(
     parameter DW = 16,
     parameter AW = $clog2(IMG_H * IMG_W)
 ) (
-    input  logic          reset,
+    input  logic          rst,
     input  logic          pclk,       // cdc
     input  logic          cam_href,
     input  logic          cam_vsync,  // 30fps
@@ -20,8 +20,8 @@ module ov7670_mem_controller #(
     // 
     // assign wData = px_data;
     // 
-    // always @(posedge pclk, posedge reset) begin
-    //     if (reset) begin
+    // always @(posedge pclk, posedge rst) begin
+    //     if (rst) begin
     //         wAddr   <= 0;
     //         byteSel <= 0;
     //         px_data <= 0;
@@ -50,8 +50,8 @@ module ov7670_mem_controller #(
 
     // data register
     logic none;  // flag of 1st byte 
-    always @(posedge pclk, posedge reset) begin
-        if (reset) begin
+    always @(posedge pclk, posedge rst) begin
+        if (rst) begin
             wData <= 0;
             none <= 0;
             we <= 0;
@@ -75,8 +75,8 @@ module ov7670_mem_controller #(
     end
 
     // waddr counter
-    always @(posedge pclk, posedge reset) begin
-        if (reset) begin
+    always @(posedge pclk, posedge rst) begin
+        if (rst) begin
             wAddr <= 0;
         end else begin
             if (!cam_vsync) begin

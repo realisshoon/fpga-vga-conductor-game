@@ -2,7 +2,7 @@
 
 module rom_reader_upscale (
     input  logic        clk,
-    input  logic        reset,
+    input  logic        rst,
     input  logic        de,
     input  logic        sw_invert,
     input  logic [ 9:0] x_pixel,
@@ -20,8 +20,8 @@ module rom_reader_upscale (
     // assign addr = (dispArea_d) ? (y_pixel * 320 + x_pixel) : 0;
     // assign o_rgb = (dispArea_d) ? px_data_rgb : 0;
 
-    // always @(posedge clk, posedge reset) begin
-    //     if (reset) begin
+    // always @(posedge clk, posedge rst) begin
+    //     if (rst) begin
     //         dispArea_d <= 1'b0;
     //     end else begin
     //         dispArea_d <= dispArea;
@@ -33,8 +33,8 @@ module rom_reader_upscale (
     assign addr  = (de_d) ? (y_pixel[9:1] * 320 + x_pixel[9:1]) : 0;
     assign o_rgb = (de_d) ? px_data_rgb : {12{sw_invert}};
 
-    always @(posedge clk, posedge reset) begin
-        if (reset) begin
+    always @(posedge clk, posedge rst) begin
+        if (rst) begin
             de_d <= 1'b0;
         end else begin
             de_d <= de;
