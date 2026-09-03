@@ -24,8 +24,8 @@ module song_decoder (
 
     // Actual MIDI BPM
     localparam BPM_SONG_0  = 8'd120;
-    localparam BPM_SONG_1  = 8'd112;
-    localparam BPM_SONG_2  = 8'd144;
+    localparam BPM_SONG_1  = 8'd110;
+    localparam BPM_SONG_2  = 8'd145;
     localparam BPM_SONG_3  = 8'd100;
     localparam BPM_SONG_4  = 8'd115;
 
