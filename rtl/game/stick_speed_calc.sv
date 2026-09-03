@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module stick_speed_calc  #(
+module stick_speed_calc #(
     parameter CLK_FREQ = 100_000_000,
     parameter MIN_BPM  = 30,
     parameter MAX_BPM  = 220
@@ -77,7 +77,7 @@ module stick_speed_calc  #(
 
     // 현재 count → BPM
     always_comb begin
-        bpm_calc = (64'd60 * CLK_FREQ) / (count_reg + 28'd1);
+        bpm_calc = (64'd60 * CLK_FREQ) / (count_reg + 28'd1);  //
         if (bpm_calc < MIN_BPM) bpm_idx = MIN_BPM;
         else if (bpm_calc > MAX_BPM) bpm_idx = MAX_BPM;
         else bpm_idx = bpm_calc[7:0];
@@ -127,7 +127,7 @@ module stick_speed_calc  #(
             count_reg           <= 28'd0;
             time_count          <= 28'd0;
             song_bpm            <= i_pc_song_bpm;
-            song_cnt            <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;
+            song_cnt            <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;  //
             stick_bpm           <= i_pc_song_bpm;
             stick_cnt           <= 28'd0;
             o_speed             <= i_pc_song_bpm;
@@ -150,12 +150,14 @@ module stick_speed_calc  #(
                 // 첫 시작은 정박자
                 S_READY: begin
 
-                    song_bpm            <= i_pc_song_bpm;
-                    song_cnt            <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;
-                    o_speed             <= i_pc_song_bpm;
-                    stick_control_valid <= 1'b1;
-                    count_reg           <= 28'd0;
+                    song_bpm  <= i_pc_song_bpm;
+                    song_cnt  <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;  //
+                    o_speed   <= i_pc_song_bpm;
+                    count_reg <= 28'd0;
+
+
                     if (i_pattern_tick) begin
+                        stick_control_valid <= 1'b1;
                         o_pattern_tick <= 1'b1;
                     end
                 end
@@ -190,7 +192,7 @@ module stick_speed_calc  #(
                     if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
-                        song_cnt   <= (64'd60 * CLK_FREQ) / stick_bpm;
+                        song_cnt   <= (64'd60 * CLK_FREQ) / stick_bpm;  //
                         time_count <= 28'd0;
                     end else begin
                         time_count <= time_count + 28'd1;
@@ -204,7 +206,7 @@ module stick_speed_calc  #(
                     stick_control_valid <= 1'b1;
                     o_pattern_tick      <= 1'b1;
                     song_bpm            <= stick_bpm;
-                    song_cnt            <= (64'd60 * CLK_FREQ) / stick_bpm;
+                    song_cnt            <= (64'd60 * CLK_FREQ) / stick_bpm;  //
                     count_reg           <= 28'd0;
                 end
             endcase

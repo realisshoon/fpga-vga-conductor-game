@@ -30,7 +30,7 @@ module rom_reader_upscale (
 
     // VGA
     logic de_d;
-    assign addr  = (de_d) ? (y_pixel[9:1] * 320 + x_pixel[9:1]) : 0;
+    assign addr  = (de_d) ? (y_pixel[9:1] * 320 + (319-x_pixel[9:1])) : 0;
     assign o_rgb = (de_d) ? px_data_rgb : {12{sw_invert}};
 
     always @(posedge clk, posedge rst) begin
