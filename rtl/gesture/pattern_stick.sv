@@ -6,7 +6,7 @@ module pattern_stick #(
     parameter logic [9:0] ZONE1_X_MAX = 10'd180,
     parameter logic [9:0] ZONE1_Y_MIN = 10'd175,
     parameter logic [9:0] ZONE1_Y_MAX = 10'd240,
-    
+
     parameter logic [9:0] ZONE2_X_MIN = 10'd75,
     parameter logic [9:0] ZONE2_X_MAX = 10'd125,
     parameter logic [9:0] ZONE2_Y_MIN = 10'd110,
@@ -70,14 +70,15 @@ module pattern_stick #(
             pattern_control_valid <= 1'b0;
         end else begin
             pattern_tick <= 1'b0;
+                c_state               <= n_state;
+                pattern_tick          <= pattern_tick_reg;
 
             if (i_vsync) begin
                 pattern_control_valid <= 1'b0;
             end else if (pattern_control_valid) begin
                 if (pattern_control_ready) pattern_control_valid <= 1'b0;
-            end else if (n_state != c_state) begin
-                c_state               <= n_state;
-                pattern_tick          <= pattern_tick_reg;
+            end
+            if (n_state != c_state) begin
                 pattern_control_valid <= 1'b1;
             end
         end
