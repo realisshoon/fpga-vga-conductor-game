@@ -32,7 +32,7 @@ module pattern_stick #(
     input  logic       pattern_control_ready,
     output logic       pattern_control_valid,
     output logic [2:0] pattern_state,
-    output logic       i_state_change_enable,
+    input logic       i_state_change_enable,
     output logic       pattern_tick
 );
 
@@ -95,7 +95,7 @@ module pattern_stick #(
                 end
             end
             START: begin
-                if (!zone4) begin
+                if (zone4) begin
                     n_state = READY;
                 end
             end
