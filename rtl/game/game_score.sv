@@ -118,7 +118,7 @@ module game_score  (
     //Data Register
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            tick_cnt <= 2'd2;
+            tick_cnt <= 2'd1;
             speed_ram[0] <= 8'd100;
             speed_ram[1] <= 8'd100;
             speed_ram[2] <= 8'd100;
@@ -128,7 +128,7 @@ module game_score  (
         end else begin
             case (c_state)
                 IDLE: begin
-                    tick_cnt <= 2'd2;
+                    tick_cnt <= 2'd1;
                     speed_ram[0] <= i_song_speed;
                     speed_ram[1] <= i_song_speed;
                     speed_ram[2] <= i_song_speed;
