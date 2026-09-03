@@ -26,7 +26,10 @@ module sync_delay (
                     tx_sync <= 1'b1;
                 end else begin
                     cnt <= cnt + 1;
+                    tx_sync <= 1'b0;
                 end
+            end else begin
+                tx_sync <= 1'b0;
             end
         end
     end
