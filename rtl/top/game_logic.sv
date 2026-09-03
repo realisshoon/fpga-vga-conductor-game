@@ -108,6 +108,7 @@ module game_logic (
         .i_vsync(i_vsync),
         .pattern_state(w_pattern_state),
         .i_pattern_tick(w_pattern_tick),
+        .i_pc_song_bpm(w_song_bpm),
         .stick_control_ready(stick_control_ready),
         .stick_control_valid(stick_control_valid),
         .o_pattern_tick(w_score_pattern_tick),
