@@ -228,8 +228,8 @@ module stick_speed_calc #(
                         o_speed             <= stick_bpm;
                         stick_control_valid <= 1'b1;
                         o_pattern_tick      <= 1'b1;
-                    end
-                    if (n_state == S_COUNT) begin
+                        time_count <= time_count + 1;
+                    end else if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
                         song_cnt   <= bpm_to_cnt_LUT[stick_bpm];  //
