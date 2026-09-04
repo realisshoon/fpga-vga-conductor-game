@@ -12,8 +12,8 @@ module pattern_stick #(
     parameter logic [9:0] ZONE2_Y_MIN = 10'd110,
     parameter logic [9:0] ZONE2_Y_MAX = 10'd160,
 
-    parameter logic [9:0] ZONE3_X_MIN = 10'd195,
-    parameter logic [9:0] ZONE3_X_MAX = 10'd245,
+    parameter logic [9:0] ZONE3_X_MIN = 10'd270,//195
+    parameter logic [9:0] ZONE3_X_MAX = 10'd320,//245
     parameter logic [9:0] ZONE3_Y_MIN = 10'd110,
     parameter logic [9:0] ZONE3_Y_MAX = 10'd160,
 
