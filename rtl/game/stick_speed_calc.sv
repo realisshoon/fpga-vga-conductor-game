@@ -2,6 +2,7 @@
 
 module stick_speed_calc #(
     parameter CLK_FREQ = 100_000_000,
+    parameter MS_FREQ  = 1000,
     parameter MIN_BPM  = 30,
     parameter MAX_BPM  = 220
 ) (
@@ -20,7 +21,7 @@ module stick_speed_calc #(
     output logic [7:0] o_speed
 );
 
-    parameter MS_FREQ = 1000;
+
 
     // Conduct state
     typedef enum logic [2:0] {
@@ -39,6 +40,9 @@ module stick_speed_calc #(
         S_IDLE,
         S_READY,
         S_COUNT,
+        S_WAIT,
+        S_CALC,
+        S_COMP,
         S_FAST,
         S_NORMAL
     } speed_state_e;
@@ -60,7 +64,7 @@ module stick_speed_calc #(
     logic [10:0] time_count;
 
     // BPM 계산
-    logic [7:0] bpm_calc;
+    logic [15:0] bpm_calc;
     logic [7:0] bpm_idx;
 
     // 5 BPM LUT
@@ -68,6 +72,8 @@ module stick_speed_calc #(
 
     logic ms_tick;
     logic ms_en;
+    logic [7:0] reg_bpm_comp;
+    logic reg_wait;
 
     integer i;
 
@@ -80,12 +86,21 @@ module stick_speed_calc #(
         end
     end
 
-    // 현재 count → BPM
-    always_comb begin
-        bpm_calc = (16'd60 * MS_FREQ) / (count_reg);  //
-        bpm_idx  = bpm_calc[7:0];  //??
+    integer j;
+    logic [10:0] bpm_to_cnt_LUT[30:221];
+
+    initial begin
+        for (j = 30; j <= 220; j = j + 5) begin
+            bpm_to_cnt_LUT[j] = (16'd60 * MS_FREQ) / j;
+        end
     end
 
+
+    // 현재 count → BPM
+    always_comb begin
+        bpm_calc = (16'd60000) / (count_reg);  //
+        bpm_idx  = bpm_calc[7:0];  //??
+    end
     // Next State Logic
     always_comb begin
         n_state = c_state;
@@ -102,10 +117,19 @@ module stick_speed_calc #(
                 end
                 S_COUNT: begin
                     if (i_pattern_tick) begin
-                        // BPM이 클수록 빠른 지휘
-                        if (arr[bpm_idx] > song_bpm) n_state = S_FAST;
-                        else n_state = S_NORMAL;
+                        n_state = S_WAIT;
                     end
+                end
+                S_WAIT: begin
+                    if (reg_wait) n_state = S_CALC;
+                end
+                S_CALC: begin
+                    n_state = S_COMP;
+                end
+                S_COMP: begin
+                    // BPM이 클수록 빠른 지휘
+                    if (arr[reg_bpm_comp] > song_bpm) n_state = S_FAST;
+                    else n_state = S_NORMAL;
                 end
                 S_FAST: begin
                     // 남아있는 이전 음악 시간만 기다림
@@ -130,13 +154,15 @@ module stick_speed_calc #(
             count_reg           <= 11'd0;
             time_count          <= 11'd0;
             song_bpm            <= i_pc_song_bpm;
-            song_cnt            <= (16'd60 * MS_FREQ) / i_pc_song_bpm;  //
+            song_cnt            <= bpm_to_cnt_LUT[i_pc_song_bpm];  //
             stick_bpm           <= i_pc_song_bpm;
+            reg_bpm_comp        <= 0;
             stick_cnt           <= 11'd0;
             o_speed             <= i_pc_song_bpm;
             stick_control_valid <= 1'b0;
             o_pattern_tick      <= 1'b0;
             ms_en               <= 0;
+            reg_wait            <= 0;
         end else begin
             c_state        <= n_state;
             // pattern tick 출력은 기본 0
@@ -156,7 +182,7 @@ module stick_speed_calc #(
                 S_READY: begin
 
                     song_bpm  <= i_pc_song_bpm;
-                    song_cnt  <= (16'd60 * MS_FREQ) / i_pc_song_bpm;  //
+                    song_cnt  <= bpm_to_cnt_LUT[i_pc_song_bpm];  //
                     o_speed   <= i_pc_song_bpm;
                     count_reg <= 11'd0;
 
@@ -173,15 +199,23 @@ module stick_speed_calc #(
                     if (i_pattern_tick) begin
                         // 현재 지휘 결과 저장
                         stick_cnt  <= count_reg;
-                        stick_bpm  <= arr[bpm_idx];
                         // 다음 동작 준비
-                        count_reg  <= 11'd0;
                         time_count <= 11'd0;
                     end else if (ms_tick) begin
                         // overflow 방지
                         if (count_reg != 11'h7FF)
                             count_reg <= count_reg + 11'd1;
                     end
+                end
+                S_WAIT: begin
+                    reg_wait <= ~reg_wait;
+                end
+                S_CALC: begin
+                    reg_bpm_comp <= bpm_idx;
+                    count_reg <= 11'd0;
+                end
+                S_COMP: begin
+                    stick_bpm <= arr[reg_bpm_comp];
                 end
                 // FAST
                 // 이전 음악이 끝날 때까지 대기
@@ -198,7 +232,7 @@ module stick_speed_calc #(
                     if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
-                        song_cnt   <= (16'd60 * MS_FREQ) / stick_bpm;  //
+                        song_cnt   <= bpm_to_cnt_LUT[stick_bpm];  //
                         time_count <= 11'd0;
                     end else if (ms_tick) begin
                         time_count <= time_count + 11'd1;
@@ -212,7 +246,7 @@ module stick_speed_calc #(
                     stick_control_valid <= 1'b1;
                     o_pattern_tick      <= 1'b1;
                     song_bpm            <= stick_bpm;
-                    song_cnt            <= (16'd60 * MS_FREQ) / stick_bpm;  //
+                    song_cnt            <= bpm_to_cnt_LUT[stick_bpm];  //
                     count_reg           <= 11'd0;
                 end
             endcase
@@ -224,14 +258,14 @@ module stick_speed_calc #(
     // State Change Enable
     always_comb begin
         case (c_state)
-            S_FAST, S_NORMAL: o_state_change_enable = 1'b0;
+            S_FAST, S_NORMAL, S_COMP, S_CALC: o_state_change_enable = 1'b0;
             default: o_state_change_enable = 1'b1;
         endcase
     end
 
     ms_tick_gen #(
         .CLK_FREQ(CLK_FREQ),
-        .MS_FREQ (1000)
+        .MS_FREQ (MS_FREQ)
     ) u_ms_tick_gen (
         .clk(clk),
         .rst(rst),
@@ -269,6 +303,5 @@ module ms_tick_gen #(
             ms_tick <= 1'b0;
         end
     end
-
 
 endmodule

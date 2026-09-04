@@ -8,6 +8,9 @@ set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
 create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
 
 
+set_multicycle_path 3 -setup -from [get_pins {U_GAME_LOGIC/u_speed_calc/count_reg_reg[*]/C}] -to [get_pins {U_GAME_LOGIC/u_speed_calc/reg_bpm_comp_reg*[*]/D}]
+set_multicycle_path 2 -hold  -from [get_pins {U_GAME_LOGIC/u_speed_calc/count_reg_reg[*]/C}] -to [get_pins {U_GAME_LOGIC/u_speed_calc/reg_bpm_comp_reg*[*]/D}]
+
 ## Switches
 # set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33 } [get_ports {sw_bin_thr[0]}]
 # set_property -dict { PACKAGE_PIN V16   IOSTANDARD LVCMOS33 } [get_ports {sw_bin_thr[1]}]
