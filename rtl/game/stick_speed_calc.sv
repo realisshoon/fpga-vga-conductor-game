@@ -20,6 +20,8 @@ module stick_speed_calc #(
     output logic [7:0] o_speed
 );
 
+    parameter MS_FREQ = 1000;
+
     // Conduct state
     typedef enum logic [2:0] {
         IDLE = 3'b000,
@@ -44,25 +46,28 @@ module stick_speed_calc #(
     speed_state_e c_state, n_state;
 
     // 현재 지휘 시간
-    logic [27:0] count_reg;
+    logic [10:0] count_reg;
 
     // 현재 재생 중인 노래
     logic [7:0] song_bpm;
-    logic [27:0] song_cnt;
+    logic [10:0] song_cnt;
 
     // 방금 측정한 지휘 결과
     logic [7:0] stick_bpm;
-    logic [27:0] stick_cnt;
+    logic [10:0] stick_cnt;
 
     // FAST 대기 시간
-    logic [27:0] time_count;
+    logic [10:0] time_count;
 
     // BPM 계산
-    logic [63:0] bpm_calc;
+    logic [7:0] bpm_calc;
     logic [7:0] bpm_idx;
 
     // 5 BPM LUT
     logic [7:0] arr[0:255];
+
+    logic ms_tick;
+    logic ms_en;
 
     integer i;
 
@@ -77,10 +82,8 @@ module stick_speed_calc #(
 
     // 현재 count → BPM
     always_comb begin
-        bpm_calc = (64'd60 * CLK_FREQ) / (count_reg + 28'd1);  //
-        if (bpm_calc < MIN_BPM) bpm_idx = MIN_BPM;
-        else if (bpm_calc > MAX_BPM) bpm_idx = MAX_BPM;
-        else bpm_idx = bpm_calc[7:0];
+        bpm_calc = (16'd60 * MS_FREQ) / (count_reg);  //
+        bpm_idx  = bpm_calc[7:0];  //??
     end
 
     // Next State Logic
@@ -106,7 +109,7 @@ module stick_speed_calc #(
                 end
                 S_FAST: begin
                     // 남아있는 이전 음악 시간만 기다림
-                    if (time_count + 28'd1 >= song_cnt - stick_cnt)
+                    if (time_count + 11'd1 >= song_cnt - stick_cnt)
                         n_state = S_COUNT;
                 end
                 S_NORMAL: begin
@@ -124,17 +127,18 @@ module stick_speed_calc #(
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             c_state             <= S_IDLE;
-            count_reg           <= 28'd0;
-            time_count          <= 28'd0;
+            count_reg           <= 11'd0;
+            time_count          <= 11'd0;
             song_bpm            <= i_pc_song_bpm;
-            song_cnt            <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;  //
+            song_cnt            <= (16'd60 * MS_FREQ) / i_pc_song_bpm;  //
             stick_bpm           <= i_pc_song_bpm;
-            stick_cnt           <= 28'd0;
+            stick_cnt           <= 11'd0;
             o_speed             <= i_pc_song_bpm;
             stick_control_valid <= 1'b0;
             o_pattern_tick      <= 1'b0;
+            ms_en               <= 0;
         end else begin
-            c_state <= n_state;
+            c_state        <= n_state;
             // pattern tick 출력은 기본 0
             o_pattern_tick <= 1'b0;
             // valid / ready handshake
@@ -143,22 +147,24 @@ module stick_speed_calc #(
             case (c_state)
                 // IDLE
                 S_IDLE: begin
-                    count_reg  <= 28'd0;
-                    time_count <= 28'd0;
+                    count_reg  <= 11'd0;
+                    time_count <= 11'd0;
+                    ms_en      <= 0;
                 end
                 // READY
                 // 첫 시작은 정박자
                 S_READY: begin
 
                     song_bpm  <= i_pc_song_bpm;
-                    song_cnt  <= (64'd60 * CLK_FREQ) / i_pc_song_bpm;  //
+                    song_cnt  <= (16'd60 * MS_FREQ) / i_pc_song_bpm;  //
                     o_speed   <= i_pc_song_bpm;
-                    count_reg <= 28'd0;
+                    count_reg <= 11'd0;
 
 
                     if (i_pattern_tick) begin
                         stick_control_valid <= 1'b1;
                         o_pattern_tick <= 1'b1;
+                        ms_en <= 1;
                     end
                 end
                 // COUNT
@@ -166,22 +172,22 @@ module stick_speed_calc #(
                 S_COUNT: begin
                     if (i_pattern_tick) begin
                         // 현재 지휘 결과 저장
-                        stick_cnt  <= count_reg + 28'd1;
+                        stick_cnt  <= count_reg;
                         stick_bpm  <= arr[bpm_idx];
                         // 다음 동작 준비
-                        count_reg  <= 28'd0;
-                        time_count <= 28'd0;
-                    end else begin
+                        count_reg  <= 11'd0;
+                        time_count <= 11'd0;
+                    end else if (ms_tick) begin
                         // overflow 방지
-                        if (count_reg != 28'hFFF_FFFF)
-                            count_reg <= count_reg + 28'd1;
+                        if (count_reg != 11'h7FF)
+                            count_reg <= count_reg + 11'd1;
                     end
                 end
                 // FAST
                 // 이전 음악이 끝날 때까지 대기
                 S_FAST: begin
                     // 지휘 count는 하지 않음
-                    count_reg <= 28'd0;
+                    count_reg <= 11'd0;
 
                     // FAST 진입 첫 clk에만 출력
                     if (time_count == 0) begin
@@ -192,10 +198,10 @@ module stick_speed_calc #(
                     if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
-                        song_cnt   <= (64'd60 * CLK_FREQ) / stick_bpm;  //
-                        time_count <= 28'd0;
-                    end else begin
-                        time_count <= time_count + 28'd1;
+                        song_cnt   <= (16'd60 * MS_FREQ) / stick_bpm;  //
+                        time_count <= 11'd0;
+                    end else if (ms_tick) begin
+                        time_count <= time_count + 11'd1;
                     end
                 end
                 // NORMAL
@@ -206,8 +212,8 @@ module stick_speed_calc #(
                     stick_control_valid <= 1'b1;
                     o_pattern_tick      <= 1'b1;
                     song_bpm            <= stick_bpm;
-                    song_cnt            <= (64'd60 * CLK_FREQ) / stick_bpm;  //
-                    count_reg           <= 28'd0;
+                    song_cnt            <= (16'd60 * MS_FREQ) / stick_bpm;  //
+                    count_reg           <= 11'd0;
                 end
             endcase
             // VSYNC → valid clear
@@ -222,4 +228,47 @@ module stick_speed_calc #(
             default: o_state_change_enable = 1'b1;
         endcase
     end
+
+    ms_tick_gen #(
+        .CLK_FREQ(CLK_FREQ),
+        .MS_FREQ (1000)
+    ) u_ms_tick_gen (
+        .clk(clk),
+        .rst(rst),
+        .en(ms_en),
+        .ms_tick(ms_tick)
+    );
+
+endmodule
+
+module ms_tick_gen #(
+    CLK_FREQ = 100_000_000,
+    MS_FREQ  = 1000
+) (
+    input  logic clk,
+    input  logic rst,
+    input  logic en,
+    output logic ms_tick
+);
+    // parameter CLK_FREQ = 100_000_000;
+    // parameter MS_FREQ = 1000;
+    parameter CNT = CLK_FREQ / MS_FREQ;
+    parameter CNT_BW = $clog2(CNT);
+
+    logic [CNT_BW -1 : 0] count;
+
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst || !en) begin
+            count   <= '0;
+            ms_tick <= 1'b0;
+        end else if (count == CNT - 1) begin
+            count   <= '0;
+            ms_tick <= 1'b1;
+        end else begin
+            count   <= count + 1'b1;
+            ms_tick <= 1'b0;
+        end
+    end
+
+
 endmodule
