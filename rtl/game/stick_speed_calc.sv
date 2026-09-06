@@ -228,7 +228,7 @@ module stick_speed_calc #(
                         o_speed             <= stick_bpm;
                         stick_control_valid <= 1'b1;
                         o_pattern_tick      <= 1'b1;
-                        time_count <= time_count + 1;
+                        time_count          <= time_count + 1;
                     end else if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
@@ -258,7 +258,8 @@ module stick_speed_calc #(
     // State Change Enable
     always_comb begin
         case (c_state)
-            S_FAST, S_NORMAL, S_COMP, S_CALC: o_state_change_enable = 1'b0;
+            S_FAST, S_NORMAL, S_COMP, S_CALC, S_WAIT:
+            o_state_change_enable = 1'b0;
             default: o_state_change_enable = 1'b1;
         endcase
     end
