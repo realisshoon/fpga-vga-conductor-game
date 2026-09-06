@@ -64,7 +64,7 @@ module stick_speed_calc #(
     logic [10:0] time_count;
 
     // BPM 계산
-    logic [7:0] bpm_calc;
+    logic [15:0] bpm_calc;
     logic [7:0] bpm_idx;
 
     // 5 BPM LUT
@@ -87,7 +87,7 @@ module stick_speed_calc #(
     end
 
     integer j;
-    logic [7:0] bpm_to_cnt_LUT[30:221];
+    logic [10:0] bpm_to_cnt_LUT[30:221];
 
     initial begin
         for (j = 30; j <= 220; j = j + 5) begin
@@ -98,7 +98,7 @@ module stick_speed_calc #(
 
     // 현재 count → BPM
     always_comb begin
-        bpm_calc = (16'd600) / (count_reg);  //
+        bpm_calc = (16'd60000) / (count_reg);  //
         bpm_idx  = bpm_calc[7:0];  //??
     end
     // Next State Logic
@@ -215,7 +215,7 @@ module stick_speed_calc #(
                     count_reg <= 11'd0;
                 end
                 S_COMP: begin
-                    stick_bpm <= arr[reg_bpm_comp*100];
+                    stick_bpm <= arr[reg_bpm_comp];
                 end
                 // FAST
                 // 이전 음악이 끝날 때까지 대기
@@ -232,7 +232,7 @@ module stick_speed_calc #(
                     end else if (n_state == S_COUNT) begin
                         // 다음 음악 기준값 갱신
                         song_bpm   <= stick_bpm;
-                        song_cnt   <= bpm_to_cnt_LUT[stick_bpm];  // lUT
+                        song_cnt   <= bpm_to_cnt_LUT[stick_bpm];  //
                         time_count <= 11'd0;
                     end else if (ms_tick) begin
                         time_count <= time_count + 11'd1;
@@ -258,7 +258,8 @@ module stick_speed_calc #(
     // State Change Enable
     always_comb begin
         case (c_state)
-            S_FAST, S_NORMAL, S_COMP, S_CALC: o_state_change_enable = 1'b0;
+            S_FAST, S_NORMAL, S_COMP, S_CALC, S_WAIT:
+            o_state_change_enable = 1'b0;
             default: o_state_change_enable = 1'b1;
         endcase
     end
@@ -303,6 +304,5 @@ module ms_tick_gen #(
             ms_tick <= 1'b0;
         end
     end
-
 
 endmodule

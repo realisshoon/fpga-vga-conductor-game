@@ -1,4 +1,4 @@
-module game_score  (
+module game_score (
     input logic clk,
     input logic rst,
     input logic i_score_en,
@@ -123,7 +123,7 @@ module game_score  (
             speed_ram[1] <= 8'd100;
             speed_ram[2] <= 8'd100;
             speed_ram[3] <= 8'd100;
-            score <= 8'd5;
+            score <= 4'd5;
 
         end else begin
             case (c_state)
@@ -133,7 +133,7 @@ module game_score  (
                     speed_ram[1] <= i_song_speed;
                     speed_ram[2] <= i_song_speed;
                     speed_ram[3] <= i_song_speed;
-                    score <= 8'd5;
+                    score <= 4'd5;
 
                 end
                 COLLECT: begin
@@ -144,18 +144,18 @@ module game_score  (
                 end
                 CALC: begin
                     if (i_score_en) begin
-                        if (speed_diff > 20) begin
+                        if (speed_diff > 40) begin
                             if (score == 4'b0) begin
                                 score <= score;
                             end else begin
                                 score <= score - 1;
                             end
-                        end else if(speed_diff < 10) begin
+                        end else if (speed_diff < 20) begin
                             if (score == 4'd10) begin
-                            score <= score;
-                        end else begin
-                            score <= score + 1;
-                        end
+                                score <= score;
+                            end else begin
+                                score <= score + 1;
+                            end
                         end
                     end
                 end
