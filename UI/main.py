@@ -1,16 +1,18 @@
 import sys
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 from PySide6.QtCore import QObject, QTimer
+# pyrefly: ignore [missing-import]
 from PySide6.QtWidgets import QApplication
 
-from UI.ui import MainWindow
-from audio_manager import AudioManager
-from midi_player import MidiPlayer
-from serial_comm import SerialComm
-from capture_manager import CaptureManager
+from .ui import MainWindow
+from .audio_manager import AudioManager
+from .midi_player import MidiPlayer
+from .serial_comm import SerialComm
+from .capture_manager import CaptureManager
 
-from protocol import (
+from .protocol import (
     encode_pc_data,
     decode_fpga_data,
     PC_MAIN,
@@ -42,9 +44,9 @@ from protocol import (
 # UART CONFIG
 # =========================================================
 
-# UART_MODE = "MOCK"
+#UART_MODE = "MOCK"
 UART_MODE = "REAL"
-UART_PORT = "COM9"
+UART_PORT = "COM13"
 UART_BAUDRATE = 115200
 UART_POLL_MS = 5
 
@@ -53,10 +55,11 @@ UART_POLL_MS = 5
 # CAPTURE CONFIG
 # =========================================================
 
-CAPTURE_DEVICE_INDEX = None
+CAPTURE_DEVICE_INDEX = 2
 CAPTURE_WIDTH = 640
 CAPTURE_HEIGHT = 480
 CAPTURE_FPS = 30
+
 CAPTURE_SCAN_MAX_INDEX = 8
 CAPTURE_ALLOW_INDEX_FALLBACK = False
 
@@ -66,6 +69,7 @@ CAPTURE_NAME_HINTS = (
     "usb video",
     "uvc",
     "video capture",
+        "obs",
 )
 
 CAPTURE_REJECT_HINTS = (

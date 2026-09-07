@@ -6,7 +6,7 @@ module baud_tick_gen #(
 ) (
     input  logic clk,
     input  logic rst,
-    input logic busy,
+    input  logic busy,
     output logic baud_tick,
     output logic sampling_tick
 );
@@ -34,7 +34,7 @@ module baud_tick_gen #(
             if (sampling_tick && busy) begin
                 if (cnt_sampling_tick == SAMPLE - 1) begin
                     cnt_sampling_tick <= 0;
-                    baud_tick     <= 1'b1;
+                    baud_tick         <= 1'b1;
                 end else begin
                     cnt_sampling_tick <= cnt_sampling_tick + 1;
                     baud_tick         <= 1'b0;

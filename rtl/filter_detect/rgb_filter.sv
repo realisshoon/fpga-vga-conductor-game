@@ -2,12 +2,12 @@
 
 module rgb_filter #(
     // Red detection parameters
-    parameter logic [3:0] RED_MIN      = 4'd8,
-    parameter logic [3:0] RED_G_MARGIN = 4'd3,
-    parameter logic [3:0] RED_B_MARGIN = 4'd3,
+    parameter logic [3:0] RED_MIN      = 4'd7,
+    parameter logic [3:0] RED_G_MARGIN = 4'd1,
+    parameter logic [3:0] RED_B_MARGIN = 4'd1,
 
     // Green detection parameters
-    parameter logic [3:0] GREEN_MIN      = 4'd9,
+    parameter logic [3:0] GREEN_MIN      = 4'd6,
     parameter logic [3:0] GREEN_R_MARGIN = 4'd4,
     parameter logic [3:0] GREEN_B_MARGIN = 4'd4,
 

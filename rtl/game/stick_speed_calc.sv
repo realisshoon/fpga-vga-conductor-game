@@ -133,8 +133,7 @@ module stick_speed_calc #(
                 end
                 S_FAST: begin
                     // 남아있는 이전 음악 시간만 기다림
-                    if (time_count + 11'd1 >= song_cnt - stick_cnt)
-                        n_state = S_COUNT;
+                    if (time_count + 11'd1 >= song_cnt - stick_cnt) n_state = S_COUNT;
                 end
                 S_NORMAL: begin
                     // 출력용 1 clk 상태
@@ -168,8 +167,7 @@ module stick_speed_calc #(
             // pattern tick 출력은 기본 0
             o_pattern_tick <= 1'b0;
             // valid / ready handshake
-            if (stick_control_valid && stick_control_ready)
-                stick_control_valid <= 1'b0;
+            if (stick_control_valid && stick_control_ready) stick_control_valid <= 1'b0;
             case (c_state)
                 // IDLE
                 S_IDLE: begin
@@ -203,8 +201,7 @@ module stick_speed_calc #(
                         time_count <= 11'd0;
                     end else if (ms_tick) begin
                         // overflow 방지
-                        if (count_reg != 11'h7FF)
-                            count_reg <= count_reg + 11'd1;
+                        if (count_reg != 11'h7FF) count_reg <= count_reg + 11'd1;
                     end
                 end
                 S_WAIT: begin
@@ -258,8 +255,7 @@ module stick_speed_calc #(
     // State Change Enable
     always_comb begin
         case (c_state)
-            S_FAST, S_NORMAL, S_COMP, S_CALC, S_WAIT:
-            o_state_change_enable = 1'b0;
+            S_FAST, S_NORMAL, S_COMP, S_CALC, S_WAIT: o_state_change_enable = 1'b0;
             default: o_state_change_enable = 1'b1;
         endcase
     end

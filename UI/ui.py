@@ -1395,7 +1395,8 @@ class StageWidget(QWidget):
         # - FPGA logical coordinates stay 320 x 240.
         # - Capture input stays 640 x 480.
         # - Only the PC-side rendering rectangle is enlarged.
-        # - source_to_screen() keeps RED/GREEN/ZONE alignment.
+        # - Tracking uses VGA coordinates while the FPGA game zones
+        #   keep their existing QVGA numeric bounds.
 
         max_w = (
             w * 0.72
@@ -1441,6 +1442,45 @@ class StageWidget(QWidget):
             * rect.height()
         )
 
+    def tracking_to_screen(
+        self,
+        rect,
+        x,
+        y
+    ):
+        """Map the FPGA detector's VGA coordinates onto the video."""
+        return (
+            rect.left()
+            + x
+            / 640.0
+            * rect.width(),
+
+            rect.top()
+            + y
+            / 480.0
+            * rect.height()
+        )
+
+    def game_coordinate_to_screen(
+        self,
+        rect,
+        x,
+        y
+    ):
+        # """Place zones where the unchanged FPGA game logic sees them."""
+        # if self.capture_active:
+        #     return self.tracking_to_screen(
+        #         rect,
+        #         x,
+        #         y
+        #     )
+
+        return self.source_to_screen(
+            rect,
+            x,
+            y
+        )
+
     def make_zone(
         self,
         rect,
@@ -1450,7 +1490,7 @@ class StageWidget(QWidget):
         y2
     ):
         sx1, sy1 = (
-            self.source_to_screen(
+            self.game_coordinate_to_screen(
                 rect,
                 x1,
                 y1
@@ -1458,7 +1498,7 @@ class StageWidget(QWidget):
         )
 
         sx2, sy2 = (
-            self.source_to_screen(
+            self.game_coordinate_to_screen(
                 rect,
                 x2,
                 y2
@@ -1500,8 +1540,8 @@ class StageWidget(QWidget):
                 3,
                 self.make_zone(
                     rect,
-                    195,
-                    245,
+                    270,
+                    320,
                     110,
                     160
                 )

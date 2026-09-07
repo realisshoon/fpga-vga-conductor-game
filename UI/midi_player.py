@@ -69,6 +69,9 @@ class MidiPlayer(QObject):
 
         return None
 
+
+
+
     def play(self, midi_path, bpm=120):
         path = Path(midi_path)
 

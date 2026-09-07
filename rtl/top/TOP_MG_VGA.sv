@@ -23,30 +23,30 @@ module TOP_MG_VGA #(
 
 
 ) (
-    input  logic        clk,
-    input  logic        rst,
+    input logic clk,
+    input logic rst,
 
-    output logic        xclk,
-    input  logic        pclk,
-    input  logic        cam_href,
-    input  logic        cam_vsync,
-    input  logic [ 7:0] cam_data,
+    output logic       xclk,
+    input  logic       pclk,
+    input  logic       cam_href,
+    input  logic       cam_vsync,
+    input  logic [7:0] cam_data,
 
-    input  logic        sw_mode,
-    input  logic        sw_invert,
-    input  logic        SW_RED,
-    input  logic        SW_GREEN,
-    input  logic        SW_BLUE,
+    input logic sw_mode,
+    input logic sw_invert,
+    input logic SW_RED,
+    input logic SW_GREEN,
+    input logic SW_BLUE,
 
-    output logic        scl,
-    inout  logic        sda,
+    output logic scl,
+    inout  logic sda,
 
     output logic        H_SYNC,
     output logic        V_SYNC,
     output logic [11:0] RGB,
-    
-    output logic        tx,
-    input  logic        rx
+
+    output logic tx,
+    input  logic rx
 );
 
     // ---- pixel pipeline ----

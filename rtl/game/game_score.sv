@@ -144,13 +144,13 @@ module game_score (
                 end
                 CALC: begin
                     if (i_score_en) begin
-                        if (speed_diff > 40) begin
+                        if (speed_diff > 30) begin
                             if (score == 4'b0) begin
                                 score <= score;
                             end else begin
                                 score <= score - 1;
                             end
-                        end else if (speed_diff < 20) begin
+                        end else if (speed_diff < 5) begin
                             if (score == 4'd10) begin
                                 score <= score;
                             end else begin
