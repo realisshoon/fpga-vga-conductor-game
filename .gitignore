@@ -3,7 +3,6 @@
 *.jou
 *.log
 *.str
-
 *.cache/
 *.runs/
 *.sim/
@@ -20,3 +19,20 @@
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Python virtual environments
+.venv/
+venv/
+
+# Django
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Sphinx documentation
+docs/_build/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
